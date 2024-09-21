@@ -59,7 +59,7 @@ void selectionSort(std::vector<int>& array) {
 }
 ```
 
-## $O(n \cdot log n)$
+## $O(n \cdot \log n)$
 
 ### Merge sort
 
