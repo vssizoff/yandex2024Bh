@@ -47,3 +47,14 @@ void pasteSort(std::vector<int>& array) {
     }
 }
 ```
+
+### Selection sort
+
+```cpp
+void selectionSort(std::vector<int>& array) {
+    for (int i = 0; i < array.size() - 1; ++i) {
+        int minIndex = std::ranges::min_element(array.begin() + i, array.end()) - array.begin();
+        std::swap(array[i], array[minIndex]);
+    }
+}
+```
