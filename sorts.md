@@ -139,6 +139,18 @@ int k_thElem(std::vector<int>& array, int l, int r, int k) {
 }
 ```
 
+```cpp
+std::nth_element(array.begin(), array.begin() + k, array.end())
+```
+
+$$
+ 
+$$
+
+$array[i] < array[k]$ if $i < k$ 
+
+$array[i] > array[k]$ if $i > k$
+
 ## Count sort $O(n + C)$ $C = max(array) - min(array)$
 
 ```cpp
@@ -153,4 +165,17 @@ void countSort(std::vector<int>& array, int min = std::ranges::min(array), int m
         }
     }
 }
+```
+
+## Static arrays
+
+```cpp
+int a[N];
+std::sort(a, a + N);
+```
+
+## Stable sort - merge sort
+
+```cpp
+std::ranges::stable_sort(array)
 ```
