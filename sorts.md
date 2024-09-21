@@ -76,13 +76,13 @@ void _merge(std::vector<int>& a, std::vector<int>& b, std::vector<int>& array) {
     }
 }
 
-void merge(std::vector<int>& array) {
+void mergeSort(std::vector<int>& array) {
     if (array.size() == 1) return;
     std::vector<int> a(array.size() / 2 + array.size() % 2), b(array.size() / 2);
     for (int i = 0; i < array.size() / 2 + array.size() % 2; ++i) a[i] = array[i];
     for (int i = 0; i < array.size() / 2; ++i) b[i] = array[i + array.size() / 2];
-    merge(a);
-    merge(b);
+    mergeSort(a);
+    mergeSort(b);
     _merge(a, b, array);
 }
 ```
