@@ -1,6 +1,6 @@
 # Sorts
 
-## O($n^2$)
+## $O(n^2)$
 
 ### Bubble  sort
 
@@ -56,5 +56,33 @@ void selectionSort(std::vector<int>& array) {
         int minIndex = std::ranges::min_element(array.begin() + i, array.end()) - array.begin();
         std::swap(array[i], array[minIndex]);
     }
+}
+```
+
+## $O(n \cdot log n)$
+
+### Merge sort
+
+```cpp
+void _merge(std::vector<int>& a, std::vector<int>& b, std::vector<int>& array) {
+    int i = 0, j = 0;
+    for (int k = 0; k < array.size(); ++k) {
+        if (i < a.size() && j < b.size()) {
+            if (array[i] < array[j]) array[k] = a[i++];
+            else array[k] = b[j++];
+        }
+        else if (j == b.size()) array[k] = a[i++];
+        else array[k] = b[j++];
+    }
+}
+
+void merge(std::vector<int>& array) {
+    if (array.size() == 1) return;
+    std::vector<int> a(array.size() / 2 + array.size() % 2), b(array.size() / 2);
+    for (int i = 0; i < array.size() / 2 + array.size() % 2; ++i) a[i] = array[i];
+    for (int i = 0; i < array.size() / 2; ++i) b[i] = array[i + array.size() / 2];
+    merge(a);
+    merge(b);
+    _merge(a, b, array);
 }
 ```
