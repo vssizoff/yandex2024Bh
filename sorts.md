@@ -86,3 +86,71 @@ void mergeSort(std::vector<int>& array) {
     _merge(a, b, array);
 }
 ```
+
+### Quick sort
+
+```cpp
+std::random_device rd;
+std::mt19937 gen(rd());
+
+int partition(std::vector<int>& array, int l = 0, int r = array.size()) {
+    std::uniform_int_distribution dis(l, r);
+    int pos = dis(gen), L = l, R = r - 1;
+    while (L <= R) {
+        while (array[L] < array[pos]) ++L;
+        while (array[R] > array[pos]) --R;
+        if (L >= R) break;
+        std::swap(array[L], array[R]);
+    }
+    return R - 1;
+}
+
+void quickSort(std::vector<int>& array, int l = 0, int r = array.size()) {
+    if (l >= r) return;
+    int k = partition(array, l, r);
+    quickSort(array, l, k);
+    quickSort(array, k + 1, r);
+}
+```
+
+### k-порядковая статистика (k-элемент в массиве по возрастанию) $O(n)$
+
+```cpp
+std::random_device rd;
+std::mt19937 gen(rd());
+
+int partition(std::vector<int>& array, int l = 0, int r = array.size()) {
+    std::uniform_int_distribution dis(l, r);
+    int pos = dis(gen), L = l, R = r - 1;
+    while (L <= R) {
+        while (array[L] < array[pos]) ++L;
+        while (array[R] > array[pos]) --R;
+        if (L >= R) break;
+        std::swap(array[L], array[R]);
+    }
+    return R - 1;
+}
+
+int k_thElem(std::vector<int>& array, int l, int r, int k) {
+    if (l + 1 == r) return array[l];
+    int pos = partition(array, l, r), cnt = pos - l;
+    if (cnt >= k) return k_thElem(array, l, pos, k);
+    return k_thElem(array, pos + 1, r, k - cnt);
+}
+```
+
+## Count sort $O(n + C)$ $C = max(array) - min(array)$
+
+```cpp
+void countSort(std::vector<int>& array, int min = std::ranges::min(array), int max = std::ranges::max(array)) {
+    std::vector<int> count(max - min);
+    for (auto elem: array) count[elem - min]++;
+    int pos = 0;
+    for (int i = min; i <= max; ++i) {
+        for (int j = 0; j < array[i - min]; ++j) {
+            array[pos] = i;
+            pos++;
+        }
+    }
+}
+```
