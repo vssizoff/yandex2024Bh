@@ -77,6 +77,7 @@ Vector<int> height, upHeight;
 Vector<Pair<int>> bridges;
 
 void dfs(int vertex, int parent) {
+    upHeight[vertex] = height[vertex];
     for (auto to : graph[vertex]) {
         if (to == parent) continue;
         if (height[to] != -1) {
@@ -86,7 +87,7 @@ void dfs(int vertex, int parent) {
             dfs(to, vertex);
             upHeight[vertex] = std::min(upHeight[vertex], upHeight[to]);
             if (upHeight[to] > height[vertex]) {
-                bridges.emplace_back(vertex, to); // мост
+                bridges.emplace_back(vertex, to); // bridge
             }
         }
     }
@@ -96,15 +97,68 @@ void dfs(int vertex, int parent) {
 int n, m; cin >> n >> m;
 graph.resize(n);
 height.resize(n, -1);
-upHeight.resize(n, std::numeric_limits<int>::max());
+upHeight.resize(n);
 for (int i = 0; i < m; i++) {
     int from, to; cin >> from >> to;
     graph[from].push_back(to);
+    graph[to].push_back(from);
 }
 for (int i = 0; i < n; ++i) {
-    if (height[i] == -1) dfs(i, -1);
+    if (height[i] == -1) {
+        height[i] = 0;
+        dfs(i, -1);
+    }
 }
 for (auto [from, to] : bridges) {
     cout << from << ' ' << to << '\n';
+}
+```
+
+## Cut points
+
+```cpp
+Vector<Vector<int>> graph;
+Vector<int> height, upHeight;
+Vector<int> cutPoints;
+
+void dfs(int vertex, int parent, int root) {
+    int children = 0;
+    upHeight[vertex] = height[vertex];
+    for (auto to : graph[vertex]) {
+        if (to == parent) continue;
+        if (height[to] != -1) {
+            upHeight[vertex] = std::min(upHeight[vertex], height[to]);
+        } else {
+            height[to] = height[vertex] + 1;
+            dfs(to, vertex, root);
+            children++;
+            upHeight[vertex] = std::min(upHeight[vertex], upHeight[to]);
+            if (upHeight[to] >= height[vertex] && vertex != root) {
+                cutPoints.push_back(vertex); // cut point
+            }
+        }
+    }
+    if (vertex == root && children > 1) {
+        cutPoints.push_back(vertex); // cut point
+    }
+}
+
+int n, m; cin >> n >> m;
+graph.resize(n);
+height.resize(n, -1);
+upHeight.resize(n);
+for (int i = 0; i < m; i++) {
+    int from, to; cin >> from >> to;
+    graph[from].push_back(to);
+    graph[to].push_back(from);
+}
+for (int i = 0; i < n; ++i) {
+    if (height[i] == -1) {
+        height[i] = 0;
+        dfs(i, -1, i);
+    }
+}
+for (auto vertex : cutPoints) {
+    cout << vertex << ' ';
 }
 ```
