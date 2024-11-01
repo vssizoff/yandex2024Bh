@@ -49,18 +49,8 @@ int condensation(const Vector<Vector<int>>& graph, Vector<int>& colors) {
     for (auto vertex : order) {
         if (!used[vertex]) dfs(vertex, color++, reversedGraph, used, colors);
     }
-    return color;
+    return color; // count of components
 }
-
-int n, m; cin >> n >> m;
-Vector<Vector<int>> graph(n);
-Vector<int> colors(n);
-for (int i = 0; i < m; i++) {
-    int from, to; cin >> from >> to;
-    graph[from].push_back(to);
-}
-condensation(graph, colors); // components is count of components
-for (auto color : colors) cout << color << ' ';
 ```
 
 ### Condensation graph
@@ -80,7 +70,13 @@ for (int from = 0; from < n; ++from) {
 #### Без кратных рёбер
 
 ```cpp
-
+auto components = condensation(graph, colors);
+Vector<Set<int>> condensationGraph(components);
+for (int from = 0; from < n; ++from) {
+    for (auto to : graph[from]) {
+        if (colors[from] != colors[to]) condensationGraph[colors[from]].insert(colors[to]);
+    }
+}
 ```
 
 ## Bridges
@@ -94,11 +90,7 @@ upH[v] = \min(h[v], \min_{\forall u} h[u], \min_{\forall to} upH[u])
 $$
 
 ```cpp
-Vector<Vector<int>> graph;
-Vector<int> height, upHeight;
-Vector<Pair<int>> bridges;
-
-void dfs(int vertex, int parent) {
+void dfs(int vertex, int parent, const Vector<Vector<int>>& graph, Vector<Pair<int>>& bridges, Vector<int>& height, Vector<int>& upHeight) {
     upHeight[vertex] = height[vertex];
     for (auto to : graph[vertex]) {
         if (to == parent) continue;
@@ -106,33 +98,24 @@ void dfs(int vertex, int parent) {
             upHeight[vertex] = std::min(upHeight[vertex], height[to]);
         } else {
             height[to] = height[vertex] + 1;
-            dfs(to, vertex);
+            dfs(to, vertex, graph, bridges, height, upHeight);
             upHeight[vertex] = std::min(upHeight[vertex], upHeight[to]);
             if (upHeight[to] > height[vertex]) {
-                bridges.emplace_back(vertex, to); // bridge
+                bridges.emplace_back(std::min(vertex, to), std::max(to, vertex)); // bridge
             }
         }
     }
 }
 
-
-int n, m; cin >> n >> m;
-graph.resize(n);
-height.resize(n, -1);
-upHeight.resize(n);
-for (int i = 0; i < m; i++) {
-    int from, to; cin >> from >> to;
-    graph[from].push_back(to);
-    graph[to].push_back(from);
-}
-for (int i = 0; i < n; ++i) {
-    if (height[i] == -1) {
-        height[i] = 0;
-        dfs(i, -1);
+void findBridges(const Vector<Vector<int>>& graph, Vector<Pair<int>>& bridges) {
+    Vector<int> height(graph.size(), -1), upHeight(graph.size());
+    bridges.clear();
+    for (int i = 0; i < graph.size(); ++i) {
+        if (height[i] == -1) {
+            height[i] = 0;
+            dfs(i, -1, graph, bridges, height, upHeight);
+        }
     }
-}
-for (auto [from, to] : bridges) {
-    cout << from << ' ' << to << '\n';
 }
 ```
 
