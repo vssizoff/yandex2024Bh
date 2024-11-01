@@ -15,50 +15,64 @@ $$
 $reversedGraph$ - транспонированный
 
 ```cpp
-Vector<Vector<int>> graph, reversedGraph;
-Vector<int> order, colors;
-Vector<bool> used;
-
-void topSort(int vertex) {
+void topSort(int vertex, const Vector<Vector<int>>& graph, Vector<bool> &used, Vector<int>& order) {
     used[vertex] = true;
     for (auto to : graph[vertex]) {
-        if (!used[to]) topSort(to);
+        if (!used[to]) topSort(to, graph, used, order);
     }
     order.push_back(vertex);
 }
 
-void dfs(int vertex, int color) {
+void dfs(int vertex, int color, const Vector<Vector<int>>& graph, Vector<bool>& used, Vector<int>& colors) {
     used[vertex] = true;
     colors[vertex] = color;
-    for (auto to : reversedGraph[vertex]) {
-        if (!used[to]) dfs(to, color);
+    for (auto to : graph[vertex]) {
+        if (!used[to]) dfs(to, color, graph, used, colors);
     }
 }
 
-void condensation() {
+int condensation(const Vector<Vector<int>>& graph, Vector<int>& colors) {
+    Vector<bool> used(graph.size());
+    Vector<int> order;
     for (int i = 0; i < graph.size(); ++i) {
-        if (!used[i]) topSort(i);
+        if (!used[i]) topSort(i, graph, used, order);
     }
     std::ranges::reverse(order);
     used.assign(order.size(), false);
+    Vector<Vector<int>> reversedGraph(graph.size());
+    for (int from = 0; from < graph.size(); ++from) {
+        for (auto to : graph[from]) {
+            reversedGraph[to].push_back(from);
+        }
+    }
     int color = 0;
     for (auto vertex : order) {
-        if (!used[vertex]) dfs(vertex, color++);
+        if (!used[vertex]) dfs(vertex, color++, reversedGraph, used, colors);
     }
+    return color;
 }
 
 int n, m; cin >> n >> m;
-graph.resize(n);
-reversedGraph.resize(n);
-used.resize(n);
-colors.resize(n);
+Vector<Vector<int>> graph(n);
+Vector<int> colors(n);
 for (int i = 0; i < m; i++) {
     int from, to; cin >> from >> to;
     graph[from].push_back(to);
-    reversedGraph[to].push_back(from);
 }
-condensation();
+condensation(); // components is count of components
 for (auto color : colors) cout << color << ' ';
+```
+
+### Condensation graph
+
+```cpp
+auto components = condensation(graph, colors);
+Vector<Vector<int>> condensationGraph(components);
+for (int from = 0; from < n; ++from) {
+    for (auto to : graph[from]) {
+        if (colors[from] != colors[to]) condensationGraph[colors[from]].push_back(colors[to]);
+    }
+}
 ```
 
 ## Bridges
