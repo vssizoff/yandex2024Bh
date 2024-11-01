@@ -59,7 +59,7 @@ for (int i = 0; i < m; i++) {
     int from, to; cin >> from >> to;
     graph[from].push_back(to);
 }
-condensation(); // components is count of components
+condensation(graph, colors); // components is count of components
 for (auto color : colors) cout << color << ' ';
 ```
 
