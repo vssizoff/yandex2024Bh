@@ -122,11 +122,7 @@ void findBridges(const Vector<Vector<int>>& graph, Vector<Pair<int>>& bridges) {
 ## Cut points
 
 ```cpp
-Vector<Vector<int>> graph;
-Vector<int> height, upHeight;
-Vector<int> cutPoints;
-
-void dfs(int vertex, int parent, int root) {
+void dfs(int vertex, int parent, int root, const Vector<Vector<int>>& graph, Set<int>& cutPoints, Vector<int>& height, Vector<int>& upHeight) {
     int children = 0;
     upHeight[vertex] = height[vertex];
     for (auto to : graph[vertex]) {
@@ -135,35 +131,27 @@ void dfs(int vertex, int parent, int root) {
             upHeight[vertex] = std::min(upHeight[vertex], height[to]);
         } else {
             height[to] = height[vertex] + 1;
-            dfs(to, vertex, root);
+            dfs(to, vertex, root, graph, cutPoints, height, upHeight);
             children++;
             upHeight[vertex] = std::min(upHeight[vertex], upHeight[to]);
             if (upHeight[to] >= height[vertex] && vertex != root) {
-                cutPoints.push_back(vertex); // cut point
+                cutPoints.insert(vertex); // cut point
             }
         }
     }
     if (vertex == root && children > 1) {
-        cutPoints.push_back(vertex); // cut point
+        cutPoints.insert(vertex); // root is cut point
     }
 }
 
-int n, m; cin >> n >> m;
-graph.resize(n);
-height.resize(n, -1);
-upHeight.resize(n);
-for (int i = 0; i < m; i++) {
-    int from, to; cin >> from >> to;
-    graph[from].push_back(to);
-    graph[to].push_back(from);
-}
-for (int i = 0; i < n; ++i) {
-    if (height[i] == -1) {
-        height[i] = 0;
-        dfs(i, -1, i);
+void findCutPoints(const Vector<Vector<int>>& graph, Set<int>& cutPoints) {
+    Vector<int> height(graph.size(), -1), upHeight(graph.size());
+    cutPoints.clear();
+    for (int i = 0; i < graph.size(); ++i) {
+        if (height[i] == -1) {
+            height[i] = 0;
+            dfs(i, -1, i, graph, cutPoints, height, upHeight);
+        }
     }
-}
-for (auto vertex : cutPoints) {
-    cout << vertex << ' ';
 }
 ```
