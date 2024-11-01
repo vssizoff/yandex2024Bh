@@ -65,6 +65,8 @@ for (auto color : colors) cout << color << ' ';
 
 ### Condensation graph
 
+#### С кратными рёбрами
+
 ```cpp
 auto components = condensation(graph, colors);
 Vector<Vector<int>> condensationGraph(components);
@@ -73,6 +75,12 @@ for (int from = 0; from < n; ++from) {
         if (colors[from] != colors[to]) condensationGraph[colors[from]].push_back(colors[to]);
     }
 }
+```
+
+#### Без кратных рёбер
+
+```cpp
+
 ```
 
 ## Bridges
