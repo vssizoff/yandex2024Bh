@@ -1,11 +1,15 @@
 # Yandex algo B' lectures
+
 1. [Sorts](./sorts.md)
 2. [DFS2](./dfs2.md)
 
 # Not yandex
+
 1. [Fenvic's tree](./fenvicTree.md)
+2. [Sparse tables](./sparseTables.md)
 
 ## Headers
+
 ```cpp
 #include <iostream>
 #include <vector>

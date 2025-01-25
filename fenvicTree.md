@@ -58,7 +58,42 @@ $$
 ## Code
 
 ```cpp
+template<typename Type>
+class FenvicsTree {
+protected:
+    Vector<Type> values, tree;
 
+    [[nodiscard]] Type sum(int r) const {
+        if (!r) return 0;
+        Type ans = 0;
+        for (int i = r; i > 0; i -= i & -i) {
+            ans += tree[i];
+        }
+        return ans;
+    }
+
+public:
+    explicit FenvicsTree(int size) {
+        values.resize(size + 1);
+        tree.resize(size + 1);
+    }
+
+    void add(int index, Type value) {
+        values[index] += value;
+        while (index < tree.size()) {
+            tree[index] += value;
+            index += index & -index;
+        }
+    }
+
+    void set(int index, Type value) {
+        add(index, value - values[index]);
+    }
+
+    [[nodiscard]] Type sum(int l, int r) const {
+        return sum(r) - sum(l - 1);
+    }
+};
 ```
 
 # 2D Fenvic's tree
@@ -95,5 +130,3 @@ for (int i = x; i < n; i += i & (-i)) {
     }
 }
 ```
-
-
