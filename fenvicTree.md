@@ -1,6 +1,6 @@
 # Fenvic's tree
 
-1-indexation
+> 1-indexation
 
 $$
 k(n) = 2^l \quad l - max \quad n \vdots 2^l
