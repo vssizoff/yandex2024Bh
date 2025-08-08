@@ -1,25 +1,39 @@
-# Sparce
+# Sparce tables
+
+st[n][ceil(log n)]
+
+$$
+st[i][j]=\sum^i_{I=i-2+1} a_I
+$$
+
 ```cpp
-template<typename Type, typename Operator>
-class Sparce {
-protected:
-    Vector<Vector<Type>> sparce;
-    Operator op;
+template<typename T = LL>
+class SparseTable {
+public:
+    static constexpr int MAX_SIZE_LG = 20;
+
+private:
+    Vector<Vector<T>> sparce;
+    std::function<T(T, T)> operation;
 
 public:
-    explicit Sparce(const Vector<Type>& array, Operator op = std::min): op(op) {
-        sparce.resize(array.size(), Vector<Type>(std::__lg(array.size()) + 1));
+    void build(const Vector<T>& array) {
+        sparce.assign(array.size(), Vector<T>(MAX_SIZE_LG));
         for (int i = 0; i < array.size(); ++i) sparce[i].front() = array[i];
-        for (int p = 1; p <= std::__lg(array.size()); ++p) {
-            for (int i = 0; i + (1 << p) <= array.size(); ++i) {
-                sparce[i][p] = op(sparce[i][p - 1], sparce[i + (1 << p - 1)][p - 1]);
+        for (int i = 1; i < MAX_SIZE_LG; ++i) {
+            for (int j = 0; j < static_cast<int>(array.size()) - (1 << i) + 1; ++j) {
+                sparce[j][i] = operation(sparce[j][i - 1], sparce[j + (1 << (i - 1))][i - 1]);
             }
         }
     }
 
-    Type operator()(int l, int r) const {
-        auto p = std::__lg(r - l + 1);
-        return op(sparce[l][p], sparce[r - (1 << p) + 1][p]);
+    explicit SparseTable(const Vector<T>& array, std::function<T(T, T)> operation = [](LL a, LL b) {return std::min(a, b);}): operation(std::move(operation)) {
+        build(array);
+    }
+
+    T operator()(int l, int r) const {
+        int lg = std::__lg(r - l + 1);
+        return operation(sparce[l][lg], sparce[r - (1 << lg) + 1][lg]);
     }
 };
 ```
